@@ -14,10 +14,10 @@ export default function RootLayout({ children, params }: { children: React.React
   const d = getDict(params.locale);
   return (
     <html lang={params.locale} className={font.variable}>
-      <body className="bg-paper font-sans text-ink">
-        <p className="bg-warn px-4 py-1 text-center text-sm text-white">{d.devBanner}</p>
-        <Header locale={params.locale} />
-        <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <body className="bg-white font-sans text-ink">
+        <p className="bg-amber-50 px-4 py-1 text-center text-sm text-amber-900">{d.devBanner}</p>
+        <Header locale={params.locale} d={d} />
+        <main className="mx-auto max-w-5xl px-4 py-10">{children}</main>
       </body>
     </html>
   );
