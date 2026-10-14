@@ -15,7 +15,7 @@ const dict = {
     catNote: "নমুনা ক্যাটাগরি (dev fixture)। আসল ক্যাটাগরি Phase 2-তে ডাটাবেজ থেকে আসবে।",
     aiTitle: "AI সহকারী",
     aiBody: "এখনো কনফিগার করা হয়নি। Phase 4-এ যুক্ত হবে।",
-    devBanner: "ডেভেলপমেন্ট সংস্করণ: এখানকার তালিকা শুধু পরীক্ষামূলক নমুনা, আসল তথ্য নয়।",
+    devBanner: "প্রাথমিক সংস্করণ: তালিকা এখনো সীমিত এবং লাইভ যাচাই করা হয়নি।",
     results: "ফলাফল",
     none: "কোনো ফলাফল মেলেনি",
     noneHelp: "অন্য শব্দ লিখে দেখুন, বা ফিল্টার সরিয়ে দিন।",
@@ -43,6 +43,7 @@ const dict = {
     mapCredit: "ম্যাপ: © OpenStreetMap contributors", openMap: "বড় ম্যাপে খুলুন",
     featMap: "ম্যাপে দেখুন", featCompare: "পাশাপাশি তুলনা", featSave: "পছন্দের তালিকা",
     featMapBody: "বাংলাদেশের ম্যাপ ব্রাউজ করুন।", featCompareBody: "২–৩টি listing মিলিয়ে দেখুন।", featSaveBody: "যা পছন্দ, সংরক্ষণ করে রাখুন (শুধু এই ব্রাউজারে)।",
+    freemium: "ফ্রি + পেইড", openSite: "অফিসিয়াল সাইট দেখুন", dbOff: "ডাটাবেজ সংযুক্ত নয়। সাইটের কনফিগারেশন সম্পূর্ণ করুন।", noSource: "উৎস উল্লেখ নেই",
     notFound: "এই পাতাটি পাওয়া যায়নি",
   },
   en: {
@@ -57,7 +58,7 @@ const dict = {
     catNote: "Sample categories (dev fixture). Real categories will come from the database in Phase 2.",
     aiTitle: "AI assistant",
     aiBody: "Not configured yet. Coming in Phase 4.",
-    devBanner: "Development version: listings here are test samples, not real data.",
+    devBanner: "Early version: the listings are limited and have not been live-verified.",
     results: "Results",
     none: "No results found",
     noneHelp: "Try different words or remove some filters.",
@@ -85,6 +86,7 @@ const dict = {
     mapCredit: "Map: © OpenStreetMap contributors", openMap: "Open larger map",
     featMap: "Browse the map", featCompare: "Side-by-side compare", featSave: "Saved list",
     featMapBody: "Explore a map of Bangladesh.", featCompareBody: "Compare 2 to 3 listings.", featSaveBody: "Save what you like (in this browser only).",
+    freemium: "Free + paid", openSite: "Visit official site", dbOff: "Database is not connected. Finish the site configuration.", noSource: "No source stated",
     notFound: "This page was not found",
   },
 };

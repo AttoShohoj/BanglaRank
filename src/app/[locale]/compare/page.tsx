@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { categories, listings } from "@/lib/fixtures";
+import { getCategories, getListingsBySlugs, titleOf } from "@/lib/db";
 import { getDict, type Locale } from "@/i18n/dictionaries";
 
 export const dynamic = "force-dynamic";
 
-export default function Compare({ params, searchParams }: { params: { locale: Locale }; searchParams: { id?: string | string[] } }) {
+export default async function Compare({ params, searchParams }: { params: { locale: Locale }; searchParams: { id?: string | string[] } }) {
   const l = params.locale;
   const d = getDict(l);
   const ids = ([] as string[]).concat(searchParams.id ?? []).slice(0, 3);
-  const items = listings.filter((x) => ids.includes(x.slug));
+  const items = await getListingsBySlugs(ids);
+  const cats = await getCategories();
   if (items.length < 2) {
     return (
       <div className="rounded-2xl border border-line p-6">
@@ -18,13 +19,13 @@ export default function Compare({ params, searchParams }: { params: { locale: Lo
       </div>
     );
   }
-  const price = (p: string) => (p === "free" ? d.free : p === "paid" ? d.paid : d.priceUnknown);
+  const price = (p: string) => (p === "free" ? d.free : p === "paid" ? d.paid : p === "freemium" ? d.freemium : d.priceUnknown);
   const rows: [string, (x: (typeof items)[number]) => string][] = [
-    [d.category, (x) => categories.find((c) => c.slug === x.category)?.[l] ?? "-"],
-    [d.price, (x) => price(x.price)],
-    [d.mode, (x) => (x.online ? d.online : d.offline)],
-    [d.source, () => d.fixture],
-    [d.checked, () => d.notChecked],
+    [d.category, (x) => x.listing_categories.map((lc) => cats.find((c) => c.slug === lc.categories?.slug)?.name[l]).filter(Boolean).join(", ") || "-"],
+    [d.price, (x) => price(x.price_type)],
+    [d.mode, (x) => (x.is_online ? d.online : d.offline)],
+    [d.source, (x) => x.sources?.name ?? d.noSource],
+    [d.checked, (x) => (x.last_checked_at ? new Date(x.last_checked_at).toLocaleDateString(l === "bn" ? "bn-BD" : "en-GB") : d.notChecked)],
   ];
   return (
     <div className="space-y-4">
@@ -34,7 +35,7 @@ export default function Compare({ params, searchParams }: { params: { locale: Lo
         <table className="w-full text-left">
           <thead className="bg-[#F4F6F3]"><tr>
             <th className="p-3">{d.attribute}</th>
-            {items.map((x) => <th key={x.slug} className="p-3"><Link href={`/${l}/l/${x.slug}`} className="text-brand underline">{x.name[l]}</Link></th>)}
+            {items.map((x) => <th key={x.slug} className="p-3"><Link href={`/${l}/l/${x.slug}`} className="text-brand underline">{titleOf(x, l)}</Link></th>)}
           </tr></thead>
           <tbody>{rows.map(([label, fn]) => (
             <tr key={label} className="border-t border-line"><th scope="row" className="p-3 font-semibold">{label}</th>

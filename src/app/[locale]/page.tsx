@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { categories } from "@/lib/fixtures";
+import { getCategories, icons } from "@/lib/db";
 import { divisions, getDict, type Locale } from "@/i18n/dictionaries";
 
-export default function Home({ params }: { params: { locale: Locale } }) {
+export const dynamic = "force-dynamic";
+
+export default async function Home({ params }: { params: { locale: Locale } }) {
   const l = params.locale;
   const d = getDict(l);
+  const categories = await getCategories();
   const feats = [
     { href: "map", t: d.featMap, b: d.featMapBody, i: "🗺️" },
     { href: "compare", t: d.featCompare, b: d.featCompareBody, i: "⚖️" },
@@ -30,12 +33,11 @@ export default function Home({ params }: { params: { locale: Locale } }) {
 
       <section aria-labelledby="cats">
         <h2 id="cats" className="text-2xl font-bold">{d.categories}</h2>
-        <p className="text-sm text-ink/60">{d.catNote}</p>
         <ul className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3">
           {categories.map((c) => (
             <li key={c.slug}>
               <Link href={`/${l}/search?cat=${c.slug}`} className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-sm hover:border-brand hover:shadow-md">
-                <span className="text-2xl" aria-hidden>{c.icon}</span><span className="font-semibold">{c[l]}</span>
+                <span className="text-2xl" aria-hidden>{icons[c.slug] ?? "📂"}</span><span className="font-semibold">{c.name[l]}</span>
               </Link>
             </li>
           ))}
