@@ -1,7 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// সেটিংয়ের ছোট ভুল (স্পেস, কোটেশন, https:// না থাকা, শেষে /) নিজে ঠিক করে নেয়।
+const clean = (v?: string) => (v ?? "").trim().replace(/^["']|["']$/g, "").trim();
+function normalizeUrl(v?: string): string | null {
+  let u = clean(v).replace(/\/+$/, "");
+  if (!u) return null;
+  if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+  try { new URL(u); return u; } catch { return null; }
+}
+const url = normalizeUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
+const key = clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+// ঠিকানা বা key ভুল হলে build ভাঙবে না; db = null হলে সাইট "ডাটাবেজ সংযুক্ত নয়" দেখাবে।
 export const db = url && key ? createClient(url, key, { auth: { persistSession: false } }) : null;
 
 export type Listing = {

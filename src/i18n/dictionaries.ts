@@ -44,6 +44,7 @@ const dict = {
     featMap: "ম্যাপে দেখুন", featCompare: "পাশাপাশি তুলনা", featSave: "পছন্দের তালিকা",
     featMapBody: "বাংলাদেশের ম্যাপ ব্রাউজ করুন।", featCompareBody: "২–৩টি listing মিলিয়ে দেখুন।", featSaveBody: "যা পছন্দ, সংরক্ষণ করে রাখুন (শুধু এই ব্রাউজারে)।",
     freemium: "ফ্রি + পেইড", openSite: "অফিসিয়াল সাইট দেখুন", dbOff: "ডাটাবেজ সংযুক্ত নয়। সাইটের কনফিগারেশন সম্পূর্ণ করুন।", noSource: "উৎস উল্লেখ নেই",
+    extIntro: "BanglaRank-এ এই তথ্য এখনো নেই। বাইরের সাইটে খুঁজতে পারেন (এগুলো BanglaRank-এর ফলাফল নয়, আলাদা ওয়েবসাইট):", extGoogle: "Google-এ খুঁজুন", extMaps: "Google Maps-এ খুঁজুন", extOsm: "OpenStreetMap-এ খুঁজুন",
     notFound: "এই পাতাটি পাওয়া যায়নি",
   },
   en: {
@@ -87,6 +88,7 @@ const dict = {
     featMap: "Browse the map", featCompare: "Side-by-side compare", featSave: "Saved list",
     featMapBody: "Explore a map of Bangladesh.", featCompareBody: "Compare 2 to 3 listings.", featSaveBody: "Save what you like (in this browser only).",
     freemium: "Free + paid", openSite: "Visit official site", dbOff: "Database is not connected. Finish the site configuration.", noSource: "No source stated",
+    extIntro: "BanglaRank does not have this yet. You can search on other sites (these are not BanglaRank results; they are separate websites):", extGoogle: "Search on Google", extMaps: "Search on Google Maps", extOsm: "Search on OpenStreetMap",
     notFound: "This page was not found",
   },
 };
