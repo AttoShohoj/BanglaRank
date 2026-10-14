@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ExternalSearch from "@/components/ExternalSearch";
 import FavButton from "@/components/FavButton";
 import { db, getCategories, searchListings, titleOf } from "@/lib/db";
 import { getDict, type Locale } from "@/i18n/dictionaries";
@@ -48,20 +49,6 @@ export default async function Search({ params, searchParams }: { params: { local
         {found.length === 0 ? (
           <div className="mt-4 rounded-2xl border border-line p-6">
             <p className="font-semibold">{d.none}</p><p>{d.noneHelp}</p>
-            {(searchParams.q ?? "").trim() && (
-              <div className="mt-4 border-t border-line pt-4">
-                <p className="text-sm">{d.extIntro}</p>
-                <ul className="mt-2 flex flex-wrap gap-2 text-sm">
-                  {[
-                    [d.extGoogle, `https://www.google.com/search?q=${encodeURIComponent(searchParams.q ?? "")}`],
-                    [d.extMaps, `https://www.google.com/maps/search/${encodeURIComponent(searchParams.q ?? "")}`],
-                    [d.extOsm, `https://www.openstreetmap.org/search?query=${encodeURIComponent(searchParams.q ?? "")}`],
-                  ].map(([label, href]) => (
-                    <li key={href}><a href={href} target="_blank" rel="noopener noreferrer" className="inline-block rounded-full border border-line px-4 py-2 hover:border-brand">{label} ↗</a></li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         ) : (
           <form action={`/${l}/compare`} className="mt-4">
@@ -83,6 +70,7 @@ export default async function Search({ params, searchParams }: { params: { local
             </div>
           </form>
         )}
+        {(searchParams.q ?? "").trim() && <ExternalSearch q={(searchParams.q ?? "").trim()} d={d} />}
       </section>
     </div>
   );
