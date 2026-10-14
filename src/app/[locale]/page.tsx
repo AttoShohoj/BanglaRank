@@ -55,6 +55,7 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
 
       <section aria-labelledby="ai" className="rounded-2xl border border-dashed border-line p-5">
         <h2 id="ai" className="font-bold">{d.aiTitle}</h2><p className="text-ink/70">{d.aiBody}</p>
+        <Link href={`/${l}/assistant`} className="mt-2 inline-block rounded-full bg-brand px-5 py-2 font-semibold text-white">{d.navAssistant}</Link>
       </section>
     </div>
   );

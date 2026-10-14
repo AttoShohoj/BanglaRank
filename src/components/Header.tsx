@@ -15,6 +15,7 @@ export default function Header({ locale, d }: { locale: Locale; d: Dict }) {
           <Link href={`/${locale}/search`}>{d.navSearch}</Link>
           <Link href={`/${locale}/map`}>{d.navMap}</Link>
           <Link href={`/${locale}/compare`}>{d.navCompare}</Link>
+          <Link href={`/${locale}/assistant`}>{d.navAssistant}</Link>
         </nav>
         <nav aria-label="Language" className="flex gap-1 rounded-full border border-line p-1 text-sm">
           <Link href={`/bn${rest}`} lang="bn" aria-current={locale === "bn"} className={pill("bn")}>বাংলা</Link>
