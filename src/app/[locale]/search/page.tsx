@@ -1,17 +1,23 @@
 import Link from "next/link";
 import ExternalSearch from "@/components/ExternalSearch";
 import FavButton from "@/components/FavButton";
-import { db, getCategories, searchListings, titleOf } from "@/lib/db";
+import { db, getCategories, getLocations, searchListings, titleOf } from "@/lib/db";
 import { getDict, type Locale } from "@/i18n/dictionaries";
 
 export const dynamic = "force-dynamic";
-type SP = { q?: string; cat?: string; price?: string; mode?: string; division?: string; sort?: string };
+type SP = { loc?: string; q?: string; cat?: string; price?: string; mode?: string; division?: string; sort?: string };
 
 export default async function Search({ params, searchParams }: { params: { locale: Locale }; searchParams: SP }) {
   const l = params.locale;
   const d = getDict(l);
   const cats = await getCategories();
   let found = await searchListings((searchParams.q ?? "").trim(), searchParams.cat || null);
+  if (searchParams.loc) {
+    const locs = await getLocations();
+    const ids = new Set([searchParams.loc]);
+    for (let grew = true; grew; ) { grew = false; for (const x of locs) if (x.parent_id && ids.has(x.parent_id) && !ids.has(x.id)) { ids.add(x.id); grew = true; } }
+    found = found.filter((x) => x.is_online || (x.location_id !== null && ids.has(x.location_id)));
+  }
   if (searchParams.price) found = found.filter((x) => x.price_type === searchParams.price);
   if (searchParams.mode) found = found.filter((x) => x.is_online === (searchParams.mode === "online"));
   if (searchParams.sort === "name") found.sort((a, b) => titleOf(a, l).localeCompare(titleOf(b, l), l));
@@ -21,7 +27,7 @@ export default async function Search({ params, searchParams }: { params: { local
     <div className="grid gap-8 md:grid-cols-[15rem_1fr]">
       <form className="h-fit space-y-3 rounded-2xl bg-[#F4F6F3] p-4" aria-label={d.filters}>
         <h2 className="text-lg font-bold">{d.filters}</h2>
-        <input type="hidden" name="division" value={searchParams.division ?? ""} />
+        <input type="hidden" name="loc" value={searchParams.loc ?? ""} />
         <label className="block text-sm">{d.search}<input name="q" defaultValue={searchParams.q} className={f} /></label>
         <label className="block text-sm">{d.categories}
           <select name="cat" defaultValue={searchParams.cat ?? ""} className={f}>
@@ -45,6 +51,7 @@ export default async function Search({ params, searchParams }: { params: { local
 
       <section aria-live="polite">
         <h1 className="text-2xl font-bold">{d.results} ({found.length})</h1>
+        {searchParams.loc && <p className="mt-2 text-sm text-ink/70">{d.locFilterNote}</p>}
         {!db && <p className="mt-4 rounded-2xl bg-amber-50 p-4 text-amber-900">{d.dbOff}</p>}
         {found.length === 0 ? (
           <div className="mt-4 rounded-2xl border border-line p-6">

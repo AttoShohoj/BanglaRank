@@ -17,7 +17,7 @@ export type Listing = {
   id: string; slug: string; title_bn: string | null; title_en: string | null;
   description_bn: string | null; description_en: string | null;
   price_type: "free" | "paid" | "freemium" | "unknown"; is_online: boolean;
-  official_url: string | null; source_url: string | null; last_checked_at: string | null;
+  official_url: string | null; source_url: string | null; location_id: string | null; last_checked_at: string | null;
   sources: { name: string } | null;
   listing_categories: { categories: { slug: string } | null }[];
 };
@@ -50,4 +50,11 @@ export async function searchListings(q: string, cat: string | null): Promise<Lis
   const { data, error } = await db.rpc("search_listings", { q, cat });
   if (error || !data) return [];
   return getListingsBySlugs((data as { slug: string }[]).map((r) => r.slug));
+}
+
+export type Loc = { id: string; parent_id: string | null; level: string; name_bn: string | null; name_en: string | null };
+export async function getLocations(): Promise<Loc[]> {
+  if (!db) return [];
+  const { data } = await db.from("locations").select("id, parent_id, level, name_bn, name_en").eq("status", "active").limit(2000);
+  return (data ?? []) as Loc[];
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getCategories, icons } from "@/lib/db";
+import LocationPicker from "@/components/LocationPicker";
+import { getCategories, getLocations, icons } from "@/lib/db";
 import { divisions, getDict, type Locale } from "@/i18n/dictionaries";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,7 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
   const l = params.locale;
   const d = getDict(l);
   const categories = await getCategories();
+  const locations = await getLocations();
   const feats = [
     { href: "map", t: d.featMap, b: d.featMapBody, i: "🗺️" },
     { href: "compare", t: d.featCompare, b: d.featCompareBody, i: "⚖️" },
@@ -18,17 +20,12 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
       <section className="rounded-3xl bg-gradient-to-br from-[#E8F3EE] via-white to-[#F1F7FB] px-5 py-12 text-center md:px-12 md:py-16">
         <h1 className="mx-auto max-w-2xl text-3xl font-bold leading-tight md:text-5xl">{d.tagline}</h1>
         <p className="mx-auto mt-3 max-w-xl text-lg text-ink/70">{d.sub}</p>
-        <form action={`/${l}/search`} role="search" className="mx-auto mt-8 grid max-w-3xl gap-2 rounded-3xl bg-white p-2 shadow-lg ring-1 ring-line md:grid-cols-[1fr_12rem_auto] md:rounded-full">
+        <form action={`/${l}/search`} role="search" className="mx-auto mt-8 grid max-w-3xl gap-3 rounded-3xl bg-white p-3 shadow-lg ring-1 ring-line md:grid-cols-[1fr_auto]">
           <label><span className="sr-only">{d.search}</span>
             <input name="q" placeholder={d.placeholder} className="w-full rounded-full px-5 py-3 outline-none" /></label>
-          <label><span className="sr-only">{d.location}</span>
-            <select name="division" defaultValue="" className="w-full rounded-full bg-[#F4F6F3] px-4 py-3">
-              <option value="">{d.allBd}</option>
-              {divisions.map((v) => <option key={v.en} value={v.en}>{v[l]}</option>)}
-            </select></label>
           <button className="rounded-full bg-brand px-8 py-3 font-semibold text-white hover:opacity-90">{d.search}</button>
+          <div className="md:col-span-2"><LocationPicker locations={locations} locale={l} d={d} /></div>
         </form>
-        <p className="mt-3 text-sm text-ink/60">{d.locNote}</p>
       </section>
 
       <section aria-labelledby="cats">
