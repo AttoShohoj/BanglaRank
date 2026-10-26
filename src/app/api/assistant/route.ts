@@ -12,7 +12,7 @@ const DAILY = Number(process.env.AI_DAILY_REQUEST_LIMIT ?? 200);
 type Msg = { role: "user" | "assistant"; content: string };
 
 export async function POST(req: Request) {
-  const apiKey = process.env.AI_PROVIDER_API_KEY;
+  const apiKey = process.env.AI_PROVIDER_API_KEY ?? (process.env.AI_PROVIDER === "openai" && /localhost|127\.0\.0\.1/.test(process.env.AI_BASE_URL ?? "") ? "local" : undefined);
   const model = process.env.AI_MODEL;
   if (!apiKey || !model) return NextResponse.json({ error: "not_configured" }, { status: 503 });
 
@@ -44,17 +44,34 @@ export async function POST(req: Request) {
     "DATABASE RECORDS:\n" + context,
   ].join("\n");
 
+  // AI_PROVIDER=anthropic (ডিফল্ট) অথবা openai: OpenAI-সামঞ্জস্যপূর্ণ API (Groq, OpenRouter, Gemini, Ollama ইত্যাদি)
+  const provider = (process.env.AI_PROVIDER ?? "anthropic").toLowerCase();
+  const baseUrl = (process.env.AI_BASE_URL ?? "").replace(/\/+$/, "");
+  if (provider === "openai" && !/^https:\/\/|^http:\/\/(localhost|127\.0\.0\.1)/.test(baseUrl)) return NextResponse.json({ error: "not_configured" }, { status: 503 });
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 25_000);
   try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST", signal: ctl.signal,
-      headers: { "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({ model, max_tokens: 1000, system, messages }),
-    });
-    if (!r.ok) return NextResponse.json({ error: "provider_error" }, { status: 502 });
-    const data = (await r.json()) as { content?: { type: string; text?: string }[] };
-    const reply = (data.content ?? []).filter((c) => c.type === "text").map((c) => c.text).join("\n");
+    let reply = "";
+    if (provider === "openai") {
+      const r = await fetch(`${baseUrl}/chat/completions`, {
+        method: "POST", signal: ctl.signal,
+        headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({ model, max_tokens: 1000, messages: [{ role: "system", content: system }, ...messages] }),
+      });
+      if (!r.ok) return NextResponse.json({ error: "provider_error" }, { status: 502 });
+      const data = (await r.json()) as { choices?: { message?: { content?: string } }[] };
+      reply = data.choices?.[0]?.message?.content ?? "";
+    } else {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST", signal: ctl.signal,
+        headers: { "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({ model, max_tokens: 1000, system, messages }),
+      });
+      if (!r.ok) return NextResponse.json({ error: "provider_error" }, { status: 502 });
+      const data = (await r.json()) as { content?: { type: string; text?: string }[] };
+      reply = (data.content ?? []).filter((c) => c.type === "text").map((c) => c.text).join("\n");
+    }
+    if (!reply) return NextResponse.json({ error: "provider_error" }, { status: 502 });
     return NextResponse.json({ reply, sources: found.map((x) => ({ slug: x.slug, title: titleOf(x, body.locale === "en" ? "en" : "bn") })) });
   } catch {
     return NextResponse.json({ error: "provider_error" }, { status: 502 });
