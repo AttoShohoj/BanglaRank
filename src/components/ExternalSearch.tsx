@@ -1,7 +1,8 @@
 import { externalProviders } from "@/lib/external";
 import type { Dict } from "@/i18n/dictionaries";
 
-export default function ExternalSearch({ q, d }: { q: string; d: Dict }) {
+export default function ExternalSearch({ q, area, d }: { q: string; area?: string; d: Dict }) {
+  const query = (g: string) => ((g === "maps" || g === "engines") && area ? `${q} ${area}` : q);
   const groups: [string, "engines" | "markets" | "social" | "maps"][] = [
     [d.grpEngines, "engines"], [d.grpMarkets, "markets"], [d.grpSocial, "social"], [d.grpMaps, "maps"],
   ];
@@ -15,7 +16,7 @@ export default function ExternalSearch({ q, d }: { q: string; d: Dict }) {
           <ul className="mt-1 flex flex-wrap gap-2 text-sm">
             {externalProviders.filter((p) => p.group === g).map((p) => (
               <li key={p.id}>
-                <a href={p.url(q)} target="_blank" rel="noopener noreferrer" className="inline-block rounded-full border border-line bg-white px-4 py-2 hover:border-brand">{p.label} ↗</a>
+                <a href={p.url(query(p.group))} target="_blank" rel="noopener noreferrer" className="inline-block rounded-full border border-line bg-white px-4 py-2 hover:border-brand">{p.label} ↗</a>
               </li>
             ))}
           </ul>

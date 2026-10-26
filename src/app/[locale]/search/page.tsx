@@ -12,8 +12,13 @@ export default async function Search({ params, searchParams }: { params: { local
   const d = getDict(l);
   const cats = await getCategories();
   let found = await searchListings((searchParams.q ?? "").trim(), searchParams.cat || null);
+  let area = "";
   if (searchParams.loc) {
     const locs = await getLocations();
+    const byId = new Map(locs.map((x) => [x.id, x]));
+    const names: string[] = [];
+    for (let c = byId.get(searchParams.loc); c; c = c.parent_id ? byId.get(c.parent_id) : undefined) names.push((l === "bn" ? c.name_bn ?? c.name_en : c.name_en ?? c.name_bn) ?? "");
+    area = names.filter(Boolean).slice(0, 2).join(", ");
     const ids = new Set([searchParams.loc]);
     for (let grew = true; grew; ) { grew = false; for (const x of locs) if (x.parent_id && ids.has(x.parent_id) && !ids.has(x.id)) { ids.add(x.id); grew = true; } }
     found = found.filter((x) => x.is_online || (x.location_id !== null && ids.has(x.location_id)));
@@ -77,7 +82,7 @@ export default async function Search({ params, searchParams }: { params: { local
             </div>
           </form>
         )}
-        {(searchParams.q ?? "").trim() && <ExternalSearch q={(searchParams.q ?? "").trim()} d={d} />}
+        {(searchParams.q ?? "").trim() && <ExternalSearch q={(searchParams.q ?? "").trim()} area={area} d={d} />}
       </section>
     </div>
   );
