@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({ model, max_tokens: 1000, messages: [{ role: "system", content: system }, ...messages] }),
       });
-      if (!r.ok) return NextResponse.json({ error: "provider_error" }, { status: 502 });
+      if (!r.ok) { console.error("assistant provider error", r.status, (await r.text()).slice(0, 300)); return NextResponse.json({ error: r.status === 429 ? "rate_limited" : "provider_error" }, { status: 502 }); }
       const data = (await r.json()) as { choices?: { message?: { content?: string } }[] };
       reply = data.choices?.[0]?.message?.content ?? "";
     } else {
@@ -67,13 +67,14 @@ export async function POST(req: Request) {
         headers: { "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
         body: JSON.stringify({ model, max_tokens: 1000, system, messages }),
       });
-      if (!r.ok) return NextResponse.json({ error: "provider_error" }, { status: 502 });
+      if (!r.ok) { console.error("assistant provider error", r.status, (await r.text()).slice(0, 300)); return NextResponse.json({ error: r.status === 429 ? "rate_limited" : "provider_error" }, { status: 502 }); }
       const data = (await r.json()) as { content?: { type: string; text?: string }[] };
       reply = (data.content ?? []).filter((c) => c.type === "text").map((c) => c.text).join("\n");
     }
-    if (!reply) return NextResponse.json({ error: "provider_error" }, { status: 502 });
+    if (!reply) { console.error("assistant empty reply"); return NextResponse.json({ error: "provider_error" }, { status: 502 }); }
     return NextResponse.json({ reply, sources: found.map((x) => ({ slug: x.slug, title: titleOf(x, body.locale === "en" ? "en" : "bn") })) });
-  } catch {
+  } catch (e) {
+    console.error("assistant fetch failed", String(e).slice(0, 200));
     return NextResponse.json({ error: "provider_error" }, { status: 502 });
   } finally { clearTimeout(timer); }
 }
