@@ -50,6 +50,7 @@ const dict = {
     aiNotConfigured: "AI সহকারী এখনো চালু করা হয়নি (কনফিগারেশন বাকি)। বাকি সাইট স্বাভাবিক কাজ করছে।", aiError: "এই মুহূর্তে AI সেবা পাওয়া যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।", aiLimit: "অনুরোধের সীমা পার হয়েছে। কিছুক্ষণ পরে চেষ্টা করুন।", aiSources: "ডাটাবেজের সূত্র",
     district: "জেলা", upazila: "উপজেলা", allDistricts: "সব জেলা", allUpazilas: "সব উপজেলা", resetLoc: "এলাকা রিসেট", locFilterNote: "অনলাইন listing সব এলাকায় দেখানো হয়। এলাকা ঠিক করা listing এখনো কম।",
     address: "ঠিকানা", phone: "ফোন", area: "এলাকা",
+    aiTry: "যেমন জিজ্ঞেস করতে পারেন:", aiSuggest: ["আমার CV কীভাবে লিখব?", "ফ্রি কোডিং শেখার সাইট কোনগুলো?", "বাংলাদেশে অনলাইনে পাসপোর্টের আবেদন কীভাবে করব?", "Photosynthesis সহজ করে বুঝিয়ে দাও"],
     notFound: "এই পাতাটি পাওয়া যায়নি",
   },
   en: {
@@ -99,6 +100,7 @@ const dict = {
     aiNotConfigured: "The AI assistant is not enabled yet (configuration pending). The rest of the site works normally.", aiError: "The AI service is unavailable right now. Please try again shortly.", aiLimit: "Request limit reached. Please try again later.", aiSources: "Database sources",
     district: "District", upazila: "Upazila", allDistricts: "All districts", allUpazilas: "All upazilas", resetLoc: "Reset area", locFilterNote: "Online listings are shown in every area. Few listings have an area set yet.",
     address: "Address", phone: "Phone", area: "Area",
+    aiTry: "Try asking:", aiSuggest: ["How do I write a good CV?", "Which sites teach coding for free?", "How do I apply for a passport online in Bangladesh?", "Explain photosynthesis simply"],
     notFound: "This page was not found",
   },
 };

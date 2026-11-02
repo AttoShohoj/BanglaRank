@@ -11,8 +11,8 @@ export default function AssistantClient({ locale, d }: { locale: Locale; d: Dict
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
-  const send = async () => {
-    const q = text.trim();
+  const send = async (preset?: string) => {
+    const q = (preset ?? text).trim();
     if (!q || busy) return;
     const next: Msg[] = [...msgs, { role: "user", content: q }];
     setMsgs(next); setText(""); setBusy(true); setErr("");
@@ -35,6 +35,16 @@ export default function AssistantClient({ locale, d }: { locale: Locale; d: Dict
         <button onClick={() => { setMsgs([]); setErr(""); }} className="rounded-full border border-line px-4 py-1 text-sm">{d.aiNew}</button>
       </div>
       <p className="text-sm text-ink/70">{d.aiLabel}</p>
+      {msgs.length === 0 && (
+        <div>
+          <p className="text-sm font-semibold">{d.aiTry}</p>
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {d.aiSuggest.map((q) => (
+              <li key={q}><button onClick={() => send(q)} className="rounded-full border border-line bg-white px-4 py-2 text-sm hover:border-brand">{q}</button></li>
+            ))}
+          </ul>
+        </div>
+      )}
       <ul className="space-y-3" aria-live="polite">
         {msgs.map((m, i) => (
           <li key={i} className={`rounded-2xl p-4 ${m.role === "user" ? "bg-[#E8F3EE]" : "border border-line bg-white"}`}>
@@ -52,7 +62,7 @@ export default function AssistantClient({ locale, d }: { locale: Locale; d: Dict
         <label className="flex-1"><span className="sr-only">{d.aiPlaceholder}</span>
           <input value={text} maxLength={2000} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()}
             placeholder={d.aiPlaceholder} className="w-full rounded-full border border-line px-5 py-3" /></label>
-        <button onClick={send} disabled={busy} className="rounded-full bg-brand px-6 py-3 font-semibold text-white disabled:opacity-50">{d.aiSend}</button>
+        <button onClick={() => send()} disabled={busy} className="rounded-full bg-brand px-6 py-3 font-semibold text-white disabled:opacity-50">{d.aiSend}</button>
       </div>
     </div>
   );
