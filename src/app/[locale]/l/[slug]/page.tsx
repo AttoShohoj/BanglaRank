@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { descOf, getListingsBySlugs, titleOf } from "@/lib/db";
+import { descOf, getListingsBySlugs, getLocations, titleOf } from "@/lib/db";
 import { getDict, type Locale } from "@/i18n/dictionaries";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +10,14 @@ export default async function Detail({ params }: { params: { locale: Locale; slu
   const d = getDict(l);
   const [x] = await getListingsBySlugs([params.slug]);
   if (!x) notFound();
+  let area = "";
+  if (x.location_id) {
+    const locs = await getLocations();
+    const byId = new Map(locs.map((y) => [y.id, y]));
+    const names: string[] = [];
+    for (let c = byId.get(x.location_id); c; c = c.parent_id ? byId.get(c.parent_id) : undefined) names.push((l === "bn" ? c.name_bn ?? c.name_en : c.name_en ?? c.name_bn) ?? "");
+    area = names.filter(Boolean).join(", ");
+  }
   const price = x.price_type === "free" ? d.free : x.price_type === "paid" ? d.paid : x.price_type === "freemium" ? d.freemium : d.priceUnknown;
   return (
     <article className="space-y-4">
@@ -22,6 +30,9 @@ export default async function Detail({ params }: { params: { locale: Locale; slu
       <dl className="rounded-2xl border border-line bg-white p-4">
         <dt className="font-semibold">{d.price}</dt><dd>{price}</dd>
         <dt className="mt-2 font-semibold">{d.mode}</dt><dd>{x.is_online ? d.online : d.offline}</dd>
+        {area && <><dt className="mt-2 font-semibold">{d.area}</dt><dd>{area}</dd></>}
+        {x.address_text && <><dt className="mt-2 font-semibold">{d.address}</dt><dd>{x.address_text}</dd></>}
+        {x.phone && <><dt className="mt-2 font-semibold">{d.phone}</dt><dd>{x.phone}</dd></>}
         <dt className="mt-2 font-semibold">{d.source}</dt><dd>{x.sources?.name ?? d.noSource}</dd>
         <dt className="mt-2 font-semibold">{d.checked}</dt>
         <dd>{x.last_checked_at ? new Date(x.last_checked_at).toLocaleDateString(l === "bn" ? "bn-BD" : "en-GB") : d.notChecked}</dd>

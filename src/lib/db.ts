@@ -17,7 +17,7 @@ export type Listing = {
   id: string; slug: string; title_bn: string | null; title_en: string | null;
   description_bn: string | null; description_en: string | null;
   price_type: "free" | "paid" | "freemium" | "unknown"; is_online: boolean;
-  official_url: string | null; source_url: string | null; location_id: string | null; last_checked_at: string | null;
+  official_url: string | null; source_url: string | null; location_id: string | null; address_text: string | null; phone: string | null; last_checked_at: string | null;
   sources: { name: string } | null;
   listing_categories: { categories: { slug: string } | null }[];
 };

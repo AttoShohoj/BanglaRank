@@ -49,6 +49,7 @@ const dict = {
     aiLabel: "উত্তর AI তৈরি করে, ভুল হতে পারে। BanglaRank ডাটাবেজের তথ্য আলাদা করে সূত্র হিসেবে দেখানো হয়। এই সহকারীর লাইভ ওয়েব অ্যাক্সেস নেই। আপনার প্রশ্ন একটি বাইরের AI সেবায় পাঠানো হয়, তাই ব্যক্তিগত তথ্য লিখবেন না।",
     aiNotConfigured: "AI সহকারী এখনো চালু করা হয়নি (কনফিগারেশন বাকি)। বাকি সাইট স্বাভাবিক কাজ করছে।", aiError: "এই মুহূর্তে AI সেবা পাওয়া যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।", aiLimit: "অনুরোধের সীমা পার হয়েছে। কিছুক্ষণ পরে চেষ্টা করুন।", aiSources: "ডাটাবেজের সূত্র",
     district: "জেলা", upazila: "উপজেলা", allDistricts: "সব জেলা", allUpazilas: "সব উপজেলা", resetLoc: "এলাকা রিসেট", locFilterNote: "অনলাইন listing সব এলাকায় দেখানো হয়। এলাকা ঠিক করা listing এখনো কম।",
+    address: "ঠিকানা", phone: "ফোন", area: "এলাকা",
     notFound: "এই পাতাটি পাওয়া যায়নি",
   },
   en: {
@@ -97,6 +98,7 @@ const dict = {
     aiLabel: "Answers are AI-generated and may be wrong. BanglaRank database records are shown separately as sources. This assistant has no live web access. Your question is sent to an external AI service, so do not enter personal information.",
     aiNotConfigured: "The AI assistant is not enabled yet (configuration pending). The rest of the site works normally.", aiError: "The AI service is unavailable right now. Please try again shortly.", aiLimit: "Request limit reached. Please try again later.", aiSources: "Database sources",
     district: "District", upazila: "Upazila", allDistricts: "All districts", allUpazilas: "All upazilas", resetLoc: "Reset area", locFilterNote: "Online listings are shown in every area. Few listings have an area set yet.",
+    address: "Address", phone: "Phone", area: "Area",
     notFound: "This page was not found",
   },
 };

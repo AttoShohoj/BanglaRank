@@ -1,18 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
+import LocationPicker from "@/components/LocationPicker";
+import type { Dict, Locale } from "@/i18n/dictionaries";
+import type { Loc } from "@/lib/db";
 import { getBrowserClient } from "@/lib/supabase-browser";
 
 type Cat = { slug: string; name: string };
 const inp = "mt-1 w-full rounded-xl border border-line bg-white px-3 py-2";
 
-export default function AdminClient({ cats }: { cats: Cat[] }) {
+export default function AdminClient({ cats, locations, locale, d }: { cats: Cat[]; locations: Loc[]; locale: Locale; d: Dict }) {
   const sb = getBrowserClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [msg, setMsg] = useState("");
-  const [f, setF] = useState({ slug: "", title_bn: "", title_en: "", description_bn: "", description_en: "", price_type: "unknown", is_online: true, official_url: "", source_name: "", source_url: "", category: cats[0]?.slug ?? "", status: "published", checked: false });
+  const [f, setF] = useState({ slug: "", title_bn: "", title_en: "", description_bn: "", description_en: "", price_type: "unknown", is_online: true, official_url: "", source_name: "", source_url: "", category: cats[0]?.slug ?? "", location: "", address_text: "", phone: "", status: "published", checked: false });
   const set = (k: string, v: string | boolean) => setF((p) => ({ ...p, [k]: v }));
 
   useEffect(() => {
@@ -39,6 +42,7 @@ export default function AdminClient({ cats }: { cats: Cat[] }) {
     if (!/^[a-z0-9-]+$/.test(f.slug)) return setMsg("slug-এ শুধু ছোট হাতের ইংরেজি অক্ষর, সংখ্যা ও - দিন।");
     if (!f.title_bn && !f.title_en) return setMsg("অন্তত একটি নাম (বাংলা বা English) দিন।");
     if (!f.source_name.trim()) return setMsg("তথ্যের উৎসের নাম দিন। উৎস ছাড়া listing যোগ হবে না।");
+    if (!f.is_online && !f.location) return setMsg("অফলাইন listing-এর জন্য অন্তত বিভাগ বা জেলা বেছে নিন।");
     const name = f.source_name.trim();
     let { data: src } = await sb.from("sources").select("id").eq("name", name).maybeSingle();
     if (!src) {
@@ -49,7 +53,7 @@ export default function AdminClient({ cats }: { cats: Cat[] }) {
     const l = await sb.from("listings").insert({
       slug: f.slug, entity_type: "other", title_bn: f.title_bn || null, title_en: f.title_en || null,
       description_bn: f.description_bn || null, description_en: f.description_en || null,
-      price_type: f.price_type, is_online: f.is_online, official_url: f.official_url || null,
+      price_type: f.price_type, is_online: f.is_online, official_url: f.official_url || null, location_id: f.location || null, address_text: f.address_text || null, phone: f.phone || null,
       source_id: src!.id, source_url: f.source_url || null, status: f.status,
       last_checked_at: f.checked ? new Date().toISOString() : null,
     }).select("id").single();
@@ -90,6 +94,9 @@ export default function AdminClient({ cats }: { cats: Cat[] }) {
       <label className="block">ক্যাটাগরি<select className={inp} value={f.category} onChange={(e) => set("category", e.target.value)}>{cats.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}</select></label>
       <label className="block">মূল্য<select className={inp} value={f.price_type} onChange={(e) => set("price_type", e.target.value)}>
         <option value="unknown">জানা নেই</option><option value="free">ফ্রি</option><option value="paid">পেইড</option><option value="freemium">ফ্রি + পেইড</option></select></label>
+      <div className="space-y-1"><span>এলাকা (অফলাইন listing-এর জন্য বাধ্যতামূলক)</span><LocationPicker locations={locations} locale={locale} d={d} onChange={(id) => set("location", id)} /></div>
+      <label className="block">ঠিকানা (ঐচ্ছিক)<input className={inp} value={f.address_text} onChange={(e) => set("address_text", e.target.value)} /></label>
+      <label className="block">ফোন (শুধু প্রতিষ্ঠানের প্রকাশ্য নম্বর; ব্যক্তিগত নম্বর নয়)<input className={inp} value={f.phone} onChange={(e) => set("phone", e.target.value)} /></label>
       <label className="flex items-center gap-2"><input type="checkbox" checked={f.is_online} onChange={(e) => set("is_online", e.target.checked)} /> অনলাইন</label>
       <label className="block">অফিসিয়াল ওয়েবসাইট (https://...)<input className={inp} value={f.official_url} onChange={(e) => set("official_url", e.target.value)} /></label>
       <label className="block">তথ্যের উৎসের নাম (বাধ্যতামূলক)<input className={inp} value={f.source_name} onChange={(e) => set("source_name", e.target.value)} /></label>
